@@ -89,7 +89,7 @@ const Footer = () => {
 
         <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center">
           <p className="text-primary-foreground/60 text-sm">
-            © 2024 VetCare - Todos os direitos reservados. Desenvolvido com ❤️ para o bem-estar animal.
+            © 2025 VetCare - Todos os direitos reservados. Desenvolvido com ❤️ para o bem-estar animal.
           </p>
         </div>
       </div>
