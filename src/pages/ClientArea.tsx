@@ -1,15 +1,19 @@
 import { useState } from "react";
-import { Lock, User, Eye, EyeOff, Heart, Calendar, FileText, Upload, Download } from "lucide-react";
+import { Lock, User, Eye, EyeOff, Heart, Calendar, FileText, Upload, Download, Shield, Stethoscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import AdminDashboard from "@/components/AdminDashboard";
+import VetDashboard from "@/components/VetDashboard";
 
 const ClientArea = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [loginData, setLoginData] = useState({ email: "", password: "" });
+  const [userType, setUserType] = useState<"client" | "vet" | "admin">("client");
+  const [loginData, setLoginData] = useState({ email: "", password: "", type: "client" });
 
   // Dados simulados do cliente
   const clientData = {
@@ -41,6 +45,7 @@ const ClientArea = () => {
     e.preventDefault();
     // Simulação de login - qualquer email/senha funciona
     if (loginData.email && loginData.password) {
+      setUserType(loginData.type as "client" | "vet" | "admin");
       setIsLoggedIn(true);
     }
   };
@@ -53,11 +58,39 @@ const ClientArea = () => {
             <div className="bg-gradient-primary rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
               <Lock className="h-8 w-8 text-white" />
             </div>
-            <CardTitle className="text-2xl font-bold text-foreground">Área do Cliente</CardTitle>
-            <p className="text-muted-foreground">Acesse sua conta para ver os dados do seu pet</p>
+            <CardTitle className="text-2xl font-bold text-foreground">Acesso ao Sistema</CardTitle>
+            <p className="text-muted-foreground">Escolha seu tipo de acesso</p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <Label htmlFor="userType">Tipo de Usuário</Label>
+                <Select value={loginData.type} onValueChange={(value) => setLoginData(prev => ({ ...prev, type: value }))}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Selecione o tipo de acesso" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="client">
+                      <div className="flex items-center space-x-2">
+                        <User className="h-4 w-4 text-primary" />
+                        <span>Cliente/Tutor</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="vet">
+                      <div className="flex items-center space-x-2">
+                        <Stethoscope className="h-4 w-4 text-secondary" />
+                        <span>Veterinário</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="admin">
+                      <div className="flex items-center space-x-2">
+                        <Shield className="h-4 w-4 text-accent" />
+                        <span>Administrador</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div>
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -110,174 +143,239 @@ const ClientArea = () => {
     );
   }
 
+  // Renderizar dashboard baseado no tipo de usuário
+  if (userType === "admin") {
+    return <AdminDashboard onLogout={() => setIsLoggedIn(false)} />;
+  }
+
+  if (userType === "vet") {
+    return <VetDashboard onLogout={() => setIsLoggedIn(false)} />;
+  }
+
+  // Dashboard do Cliente - Melhorado
   return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Área do Cliente</h1>
-            <p className="text-muted-foreground">Bem-vindo! Aqui você encontra todas as informações do seu pet.</p>
+    <div className="min-h-screen bg-gradient-soft">
+      {/* Header */}
+      <div className="bg-card border-b border-border sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-3">
+              <div className="bg-gradient-primary rounded-full p-2">
+                <User className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-foreground">Portal do Cliente</h1>
+                <p className="text-sm text-muted-foreground">Bem-vindo de volta!</p>
+              </div>
+            </div>
+            <Button variant="outline" onClick={() => setIsLoggedIn(false)} className="hover-lift">
+              Sair
+            </Button>
           </div>
-          <Button 
-            variant="outline" 
-            onClick={() => setIsLoggedIn(false)}
-            className="hover-lift"
-          >
-            Sair
-          </Button>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Pet Info */}
-          <Card className="shadow-soft hover-lift">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Heart className="h-5 w-5 text-primary" />
-                <span>Dados do Pet</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center mb-6">
-                <div className="text-6xl mb-3">{clientData.pet.photo}</div>
-                <h3 className="text-xl font-bold text-foreground">{clientData.pet.name}</h3>
-                <p className="text-muted-foreground">{clientData.pet.breed}</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Welcome Banner */}
+        <Card className="mb-8 gradient-primary text-white shadow-strong">
+          <CardContent className="p-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold mb-2">Olá! Como está o {clientData.pet.name} hoje?</h2>
+                <p className="text-white/80">Aqui você encontra todas as informações sobre o cuidado do seu pet.</p>
               </div>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Idade:</span>
-                  <span className="font-medium">{clientData.pet.age}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Peso:</span>
-                  <span className="font-medium">{clientData.pet.weight}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Plan Info */}
-          <Card className="shadow-soft hover-lift">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <User className="h-5 w-5 text-primary" />
-                <span>Plano Contratado</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-4">
-                <h3 className="text-lg font-bold text-foreground mb-2">{clientData.plan.name}</h3>
-                <p className="text-sm text-muted-foreground">Válido até: {clientData.plan.validity}</p>
-              </div>
-              <div className="space-y-2">
-                <h4 className="font-medium text-foreground">Cobertura:</h4>
-                {clientData.plan.coverage.map((item, index) => (
-                  <Badge key={index} variant="secondary" className="mr-2 mb-2">
-                    {item}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Upload Exams */}
-          <Card className="shadow-soft hover-lift">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Upload className="h-5 w-5 text-primary" />
-                <span>Exames</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-6">
-                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground mb-4">Faça upload dos exames do seu pet</p>
-                <Button className="gradient-primary text-white hover-lift">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Enviar Exame
-                </Button>
-              </div>
-              <div className="border-t pt-4">
-                <h4 className="font-medium text-foreground mb-2">Exames Recentes:</h4>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Hemograma_15-03-24.pdf</span>
-                    <Button size="sm" variant="ghost">
-                      <Download className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Raio-X_10-01-24.pdf</span>
-                    <Button size="sm" variant="ghost">
-                      <Download className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Appointments History */}
-        <Card className="mt-8 shadow-soft">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Calendar className="h-5 w-5 text-primary" />
-              <span>Histórico de Atendimentos</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2">Data</th>
-                    <th className="text-left py-2">Tipo</th>
-                    <th className="text-left py-2">Veterinário</th>
-                    <th className="text-left py-2">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {clientData.appointments.map((appointment, index) => (
-                    <tr key={index} className="border-b hover:bg-muted/50">
-                      <td className="py-3">{appointment.date}</td>
-                      <td className="py-3">{appointment.type}</td>
-                      <td className="py-3">{appointment.vet}</td>
-                      <td className="py-3">
-                        <Badge variant="secondary">{appointment.status}</Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="text-6xl">{clientData.pet.photo}</div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Vaccines */}
-        <Card className="mt-8 shadow-soft">
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="text-center shadow-soft hover-lift">
+            <CardContent className="p-6">
+              <div className="bg-green-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                <Heart className="h-6 w-6 text-green-600" />
+              </div>
+              <div className="text-2xl font-bold text-foreground mb-1">98%</div>
+              <div className="text-sm text-muted-foreground">Saúde Geral</div>
+            </CardContent>
+          </Card>
+          
+          <Card className="text-center shadow-soft hover-lift">
+            <CardContent className="p-6">
+              <div className="bg-blue-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                <Calendar className="h-6 w-6 text-blue-600" />
+              </div>
+              <div className="text-2xl font-bold text-foreground mb-1">5</div>
+              <div className="text-sm text-muted-foreground">Consultas</div>
+            </CardContent>
+          </Card>
+          
+          <Card className="text-center shadow-soft hover-lift">
+            <CardContent className="p-6">
+              <div className="bg-purple-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                <Shield className="h-6 w-6 text-purple-600" />
+              </div>
+              <div className="text-2xl font-bold text-foreground mb-1">{clientData.plan.name}</div>
+              <div className="text-sm text-muted-foreground">Plano Ativo</div>
+            </CardContent>
+          </Card>
+          
+          <Card className="text-center shadow-soft hover-lift">
+            <CardContent className="p-6">
+              <div className="bg-orange-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                <FileText className="h-6 w-6 text-orange-600" />
+              </div>
+              <div className="text-2xl font-bold text-foreground mb-1">12</div>
+              <div className="text-sm text-muted-foreground">Documentos</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Pet Info - Enhanced */}
+          <Card className="shadow-soft hover-lift border-0">
+            <CardHeader className="bg-gradient-soft text-center rounded-t-lg">
+              <CardTitle className="text-xl font-bold text-foreground">{clientData.pet.name}</CardTitle>
+              <p className="text-muted-foreground">{clientData.pet.breed}</p>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                  <span className="text-muted-foreground">Idade</span>
+                  <span className="font-semibold">{clientData.pet.age}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                  <span className="text-muted-foreground">Peso</span>
+                  <span className="font-semibold">{clientData.pet.weight}</span>
+                </div>
+                <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center text-green-700">
+                    <Heart className="h-4 w-4 mr-2" />
+                    <span className="font-medium">Status: Saudável</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Plan Info - Enhanced */}
+          <Card className="shadow-soft hover-lift border-0">
+            <CardHeader className="bg-gradient-primary text-white rounded-t-lg">
+              <CardTitle className="text-xl font-bold flex items-center">
+                <Shield className="h-5 w-5 mr-2" />
+                {clientData.plan.name}
+              </CardTitle>
+              <p className="text-white/80">Válido até: {clientData.plan.validity}</p>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="space-y-3">
+                <h4 className="font-semibold text-foreground mb-3">Benefícios Inclusos:</h4>
+                <div className="space-y-2">
+                  {clientData.plan.coverage.map((item, index) => (
+                    <div key={index} className="flex items-center text-sm">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+                <Button className="w-full mt-4 gradient-primary text-white hover-lift">
+                  Ver Detalhes do Plano
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Actions */}
+          <Card className="shadow-soft hover-lift border-0">
+            <CardHeader>
+              <CardTitle className="text-xl font-bold text-foreground">Ações Rápidas</CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-4">
+              <Button className="w-full gradient-primary text-white hover-lift">
+                <Calendar className="h-4 w-4 mr-2" />
+                Agendar Consulta
+              </Button>
+              <Button variant="outline" className="w-full hover-lift">
+                <Upload className="h-4 w-4 mr-2" />
+                Enviar Exame
+              </Button>
+              <Button variant="outline" className="w-full hover-lift">
+                <FileText className="h-4 w-4 mr-2" />
+                Solicitar Receita
+              </Button>
+              <Button variant="outline" className="w-full hover-lift">
+                <Heart className="h-4 w-4 mr-2" />
+                Emergência
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Appointments History - Enhanced */}
+        <Card className="mt-8 shadow-soft border-0">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Calendar className="h-5 w-5 text-primary" />
-              <span>Controle de Vacinas</span>
+            <CardTitle className="text-xl font-bold flex items-center">
+              <Calendar className="h-5 w-5 text-primary mr-2" />
+              Histórico de Atendimentos
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {clientData.vaccines.map((vaccine, index) => (
-                <div key={index} className="border rounded-lg p-4 hover-lift">
-                  <h4 className="font-semibold text-foreground mb-2">{vaccine.name}</h4>
-                  <div className="space-y-1 text-sm">
-                    <p><span className="text-muted-foreground">Aplicada:</span> {vaccine.date}</p>
-                    <p><span className="text-muted-foreground">Próxima:</span> {vaccine.next}</p>
-                    <Badge 
-                      variant={vaccine.status === "Em dia" ? "secondary" : "destructive"}
-                      className="mt-2"
-                    >
-                      {vaccine.status}
-                    </Badge>
+            <div className="space-y-4">
+              {clientData.appointments.map((appointment, index) => (
+                <div key={index} className="border rounded-lg p-4 hover:bg-muted/30 transition-smooth">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-4 mb-2">
+                        <Badge variant="secondary">{appointment.date}</Badge>
+                        <span className="font-semibold">{appointment.type}</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Dr(a): {appointment.vet}
+                      </p>
+                    </div>
+                    <Badge className="bg-green-500 text-white">{appointment.status}</Badge>
                   </div>
                 </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Vaccines - Enhanced */}
+        <Card className="mt-8 shadow-soft border-0">
+          <CardHeader>
+            <CardTitle className="text-xl font-bold flex items-center">
+              <Shield className="h-5 w-5 text-primary mr-2" />
+              Carteira de Vacinação
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {clientData.vaccines.map((vaccine, index) => (
+                <Card key={index} className="border-2 hover-lift">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-bold text-foreground">{vaccine.name}</h4>
+                      <Badge 
+                        variant={vaccine.status === "Em dia" ? "default" : "destructive"}
+                        className={vaccine.status === "Em dia" ? "bg-green-500 text-white" : ""}
+                      >
+                        {vaccine.status}
+                      </Badge>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Aplicada:</span>
+                        <span className="font-medium">{vaccine.date}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Próxima:</span>
+                        <span className="font-medium">{vaccine.next}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </CardContent>
