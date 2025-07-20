@@ -64,22 +64,22 @@ const Footer = () => {
               <div className="flex items-center space-x-3">
                 <Clock className="h-4 w-4 text-secondary" />
                 <div>
-                  <p className="text-sm">Segunda a Sexta</p>
+                  <p className="text-sm text-primary-foreground/80">Segunda a Sexta</p>
                   <p className="font-medium">8h às 19h</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
                 <Clock className="h-4 w-4 text-secondary" />
                 <div>
-                  <p className="text-sm">Sábados</p>
+                  <p className="text-sm text-primary-foreground/80">Sábados</p>
                   <p className="font-medium">8h às 14h</p>
                 </div>
               </div>
-              <div className="mt-3 p-3 bg-destructive/20 rounded-lg">
-                <p className="text-sm font-medium text-destructive-foreground">
+              <div className="mt-3 p-3 bg-white/10 rounded-lg border border-white/20">
+                <p className="text-sm font-medium text-white">
                   🚨 Emergência 24h
                 </p>
-                <p className="text-sm text-destructive-foreground/80">
+                <p className="text-sm text-white/80">
                   Plantão disponível todos os dias
                 </p>
               </div>

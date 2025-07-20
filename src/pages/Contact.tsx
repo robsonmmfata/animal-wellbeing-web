@@ -287,9 +287,9 @@ const Contact = () => {
         </div>
 
         {/* Emergency Banner */}
-        <Card className="mt-12 bg-destructive/10 border-destructive/20">
+        <Card className="mt-12 bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800">
           <CardContent className="p-8 text-center">
-            <h3 className="text-2xl font-bold text-destructive mb-4">
+            <h3 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">
               🚨 Emergência Veterinária?
             </h3>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
@@ -300,7 +300,7 @@ const Contact = () => {
               <Button 
                 asChild 
                 size="lg"
-                className="bg-destructive hover:bg-destructive/90 text-white hover-lift"
+                className="bg-red-600 hover:bg-red-700 text-white hover-lift"
               >
                 <a href="tel:11999990000">
                   Ligar Emergência: (11) 99999-0000
@@ -310,7 +310,7 @@ const Contact = () => {
                 asChild 
                 size="lg"
                 variant="outline"
-                className="border-destructive text-destructive hover:bg-destructive hover:text-white hover-lift"
+                className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white hover-lift"
               >
                 <a 
                   href="https://wa.me/5511999990000?text=EMERGÊNCIA: Meu pet precisa de atendimento urgente!" 
